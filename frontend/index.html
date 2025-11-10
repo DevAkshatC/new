@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fake Review Detector - AI Powered</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: #0a0e27;
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Animated Background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      opacity: 0.15;
+    }
+
+    .bg-animation::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 50%);
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.5); }
+    }
+
+    /* Floating particles */
+    .particle {
+      position: fixed;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: float 15s infinite;
+      z-index: 1;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      25% { transform: translateY(-100px) translateX(50px); }
+      50% { transform: translateY(-200px) translateX(-50px); }
+      75% { transform: translateY(-100px) translateX(100px); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Header Section */
+    header {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .logo-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4); }
+      50% { box-shadow: 0 10px 50px rgba(102, 126, 234, 0.8); }
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradientShift 3s ease infinite;
+      margin-bottom: 10px;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 300;
+    }
+
+    /* Main Card */
+    .main-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: fadeInUp 0.8s ease 0.2s both;
+      margin-bottom: 40px;
+    }
+
+    /* Form Styling */
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.9);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 20px;
+      border-radius: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      font-size: 1rem;
+      font-family: "Inter", sans-serif;
+      resize: vertical;
+      min-height: 150px;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #667eea;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+    }
+
+    textarea::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Button Styling */
+    .btn-primary {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-primary:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.5);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    /* Loader */
+    #loader {
+      display: none;
+      margin: 30px auto;
+      text-align: center;
+    }
+
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loader-text {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+    }
+
+    /* Result Card */
+    #result {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      margin-top: 30px;
+    }
+
+    .result-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .result-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      animation: bounceIn 0.6s ease;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .result-label {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .result-value {
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+    }
+
+    .fake { color: #ff4d7d; }
+    .real { color: #00ffa3; }
+
+    /* Confidence Bar */
+    .confidence-section {
+      margin-top: 30px;
+    }
+
+    .confidence-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .confidence-container {
+      width: 100%;
+      height: 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .confidence-bar {
+      height: 100%;
+      width: 0;
+      transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .confidence-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* History Table */
+    .history-section {
+      margin-top: 60px;
+      animation: fadeInUp 0.8s ease 0.4s both;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 30px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 2px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+    }
+
+    thead tr {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    th {
+      padding: 16px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    tbody tr {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateX(5px);
+    }
+
+    td {
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    td:first-child {
+      border-left: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px 0 0 12px;
+    }
+
+    td:last-child {
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 0 12px 12px 0;
+    }
+
+    .review-text {
+      max-width: 400px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge.fake {
+      background: rgba(255, 77, 125, 0.2);
+      color: #ff4d7d;
+    }
+
+    .badge.real {
+      background: rgba(0, 255, 163, 0.2);
+      color: #00ffa3;
+    }
+
+    /* Download Button */
+    .btn-download {
+      margin-top: 25px;
+      padding: 14px 30px;
+      background: rgba(0, 255, 163, 0.1);
+      border: 2px solid #00ffa3;
+      color: #00ffa3;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-download:hover {
+      background: #00ffa3;
+      color: #0a0e27;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0, 255, 163, 0.3);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.9rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    footer strong {
+      color: #667eea;
+      font-weight: 700;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-card {
+        padding: 25px;
+      }
+
+      .section-title {
+        font-size: 1.4rem;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: 12px 8px;
+      }
+
+      .review-text {
+        max-width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Animation -->
+  <div class="bg-animation"></div>
+  
+  <!-- Floating Particles -->
+  <div class="particle" style="width: 80px; height: 80px; top: 10%; left: 10%; animation-delay: 0s;"></div>
+  <div class="particle" style="width: 60px; height: 60px; top: 70%; left: 80%; animation-delay: 2s;"></div>
+  <div class="particle" style="width: 100px; height: 100px; top: 40%; left: 85%; animation-delay: 4s;"></div>
+  <div class="particle" style="width: 50px; height: 50px; top: 80%; left: 15%; animation-delay: 6s;"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo">
+        <div class="logo-icon">🔍</div>
+      </div>
+      <h1>AI Review Authenticity Scanner</h1>
+      <p class="subtitle">Powered by Advanced Machine Learning | Real-time Detection</p>
+    </header>
+
+    <!-- Main Analysis Card -->
+    <div class="main-card">
+      <form id="reviewForm">
+        <div class="form-group">
+          <label for="review">Enter Review Text</label>
+          <textarea 
+            id="review" 
+            placeholder="Paste or type the review you want to analyze for authenticity..."
+            rows="6"
+          ></textarea>
+        </div>
+        <button type="submit" class="btn-primary">
+          <span style="position: relative; z-index: 1;">🚀 Analyze Review</span>
+        </button>
+      </form>
+
+      <!-- Loader -->
+      <div id="loader">
+        <div class="spinner"></div>
+        <div class="loader-text">Analyzing with AI...</div>
+      </div>
+
+      <!-- Result -->
+      <div id="result"></div>
+    </div>
+
+    <!-- History Section -->
+    <div class="history-section" id="historySection" style="display: none;">
+      <h2 class="section-title">Analysis History</h2>
+      <div class="main-card" style="padding: 0; overflow-x: auto;">
+        <table id="historyTable">
+          <thead>
+            <tr>
+              <th style="border-radius: 12px 0 0 0;">#</th>
+              <th>Review</th>
+              <th>Result</th>
+              <th style="border-radius: 0 12px 0 0;">Confidence</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <button id="downloadBtn" class="btn-download" style="display:none;">
+        ⬇️ Download CSV Report
+      </button>
+    </div>
+  </div>
+
+  <footer>
+    Powered by Machine Learning | Built with ❤️ by <strong>Akshat</strong>
+  </footer>
+
+  <script>
+    const form = document.getElementById("reviewForm");
+    const loader = document.getElementById("loader");
+    const resultDiv = document.getElementById("result");
+    const historySection = document.getElementById("historySection");
+    const historyBody = document.querySelector("#historyTable tbody");
+    const downloadBtn = document.getElementById("downloadBtn");
+    let predictions = [];
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const review = document.getElementById("review").value.trim();
+
+      if (!review) {
+        resultDiv.innerHTML = `
+          <div class="result-card">
+            <div class="result-icon">⚠️</div>
+            <div class="result-label">Warning</div>
+            <div style="color: #ffcc00; font-size: 1.2rem;">Please enter a review to analyze</div>
+          </div>
+        `;
+        resultDiv.style.opacity = 1;
+        return;
+      }
+
+      loader.style.display = "block";
+      resultDiv.style.opacity = 0;
+
+      const response = await fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ review }),
+      });
+
+      const result = await response.json();
+      loader.style.display = "none";
+
+      if (result.error) {
+        resultDiv.innerHTML = `
+          <div class="result-card">
+            <div class="result-icon">❌</div>
+            <div class="result-label">Error</div>
+            <div style="color: #ff4d7d; font-size: 1.2rem;">${result.error}</div>
+          </div>
+        `;
+      } else {
+        const isFake = result.prediction === "fake";
+        const colorClass = isFake ? "fake" : "real";
+        const icon = isFake ? "🚨" : "✅";
+        const color = isFake ? "#ff4d7d" : "#00ffa3";
+        const gradient = isFake 
+          ? "linear-gradient(135deg, #ff4d7d, #ff8fab)" 
+          : "linear-gradient(135deg, #00ffa3, #00d4ff)";
+
+        const confidenceValue = parseFloat(result.confidence);
+
+        resultDiv.innerHTML = `
+          <div class="result-card">
+            <div class="result-icon">${icon}</div>
+            <div class="result-label">Detection Result</div>
+            <div class="result-value ${colorClass}">${result.prediction.toUpperCase()}</div>
+            
+            <div class="confidence-section">
+              <div class="confidence-label">
+                <span>Confidence Level</span>
+                <span style="font-weight: 700; color: ${color};">${result.confidence}</span>
+              </div>
+              <div class="confidence-container">
+                <div class="confidence-bar" style="width: ${confidenceValue}%; background: ${gradient};"></div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Add to history
+        predictions.push({
+          review,
+          prediction: result.prediction,
+          confidence: result.confidence,
+        });
+
+        updateHistoryTable();
+      }
+
+      resultDiv.style.opacity = 1;
+    });
+
+    function updateHistoryTable() {
+      historySection.style.display = "block";
+      downloadBtn.style.display = "inline-flex";
+      
+      historyBody.innerHTML = predictions
+        .map((p, i) => `
+          <tr>
+            <td style="font-weight: 700; color: rgba(255, 255, 255, 0.5);">${i + 1}</td>
+            <td class="review-text" title="${p.review}">${p.review}</td>
+            <td>
+              <span class="badge ${p.prediction}">${p.prediction}</span>
+            </td>
+            <td style="font-weight: 600;">${p.confidence}</td>
+          </tr>
+        `)
+        .join("");
+    }
+
+    downloadBtn.addEventListener("click", () => {
+      const csvContent = "data:text/csv;charset=utf-8,"
+        + ["Review,Prediction,Confidence"]
+        .concat(predictions.map(p => `"${p.review.replace(/"/g, '""')}",${p.prediction},${p.confidence}`))
+        .join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "review_predictions.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  /* ---------------------------
+  Product URL Analyzer (dynamic UI)
+  Paste this at the end of your existing <script> block
+----------------------------*/
+
+(function addProductAnalyzer() {
+  // Create container
+  const container = document.createElement('div');
+  container.style.marginTop = '30px';
+  container.style.width = '100%';
+  container.style.maxWidth = '900px';
+  container.style.marginLeft = 'auto';
+  container.style.marginRight = 'auto';
+
+  // Build inner HTML (keeps styling minimal - uses your existing styles)
+  container.innerHTML = `
+    <div class="main-card" style="margin-top:18px; padding:20px;">
+      <h3 style="margin-bottom:10px; font-size:1.25rem;">🔗 Analyze Product Reviews (Amazon / Flipkart demo)</h3>
+      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+        <input id="productUrlInput" type="url" placeholder="Paste product or reviews URL (e.g. https://www.amazon.in/dp/ASIN)" 
+               style="flex:1; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.02); color:#fff;">
+        <button id="analyzeProductBtn" class="btn-primary" style="width:220px; padding:12px;">Analyze Product</button>
+      </div>
+
+      <div id="productAnalyzeLoader" style="display:none; margin-top:14px;">
+        <div class="spinner" style="width:36px; height:36px; border-width:3px;"></div>
+        <div class="loader-text" style="margin-top:8px; font-size:0.9rem;">Fetching reviews & analyzing...</div>
+      </div>
+
+      <div id="productAnalyzeResult" style="margin-top:16px; display:none;"></div>
+    </div>
+  `;
+
+  // Insert after the main-card (find existing main-card)
+  const mainCard = document.querySelector('.main-card');
+  if (mainCard && mainCard.parentNode) {
+    mainCard.parentNode.insertBefore(container, mainCard.nextSibling);
+  } else {
+    // fallback: append to container
+    document.querySelector('.container').appendChild(container);
+  }
+
+  // Elements
+  const btn = document.getElementById('analyzeProductBtn');
+  const input = document.getElementById('productUrlInput');
+  const loader = document.getElementById('productAnalyzeLoader');
+  const out = document.getElementById('productAnalyzeResult');
+
+  btn.addEventListener('click', async () => {
+    const url = input.value.trim();
+    if (!url) {
+      out.style.display = 'block';
+      out.innerHTML = `<div class="result-card"><div class="result-label">Please paste a product URL to analyze.</div></div>`;
+      return;
+    }
+
+    // show loader
+    loader.style.display = 'block';
+    out.style.display = 'none';
+    btn.disabled = true;
+    btn.style.opacity = 0.6;
+
+    try {
+      const res = await fetch('/analyze_url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ url })
+      });
+
+      const data = await res.json();
+
+      loader.style.display = 'none';
+      btn.disabled = false;
+      btn.style.opacity = 1;
+
+      if (!res.ok || data.error) {
+        out.style.display = 'block';
+        out.innerHTML = `<div class="result-card"><div class="result-label">Error</div><div style="color:#ff4d7d; margin-top:8px;">${data.error || 'Failed to fetch reviews.'}</div></div>`;
+        return;
+      }
+
+      // build result HTML
+      const resultHTML = `
+        <div class="result-card" style="text-align:left;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div class="result-label">Product Review Summary</div>
+              <div style="font-weight:800; font-size:1.4rem; margin-top:8px;">${data.total_reviews} reviews analyzed</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.9rem; color:rgba(255,255,255,0.7)">Fake</div>
+              <div style="font-weight:800; color:#ff4d7d; font-size:1.2rem;">${data.fake_count} (${data.fake_percent}%)</div>
+              <div style="height:8px"></div>
+              <div style="font-size:0.9rem; color:rgba(255,255,255,0.7)">Real</div>
+              <div style="font-weight:800; color:#00ffa3; font-size:1.2rem;">${data.real_count} (${data.real_percent}%)</div>
+            </div>
+          </div>
+
+          <div style="margin-top:18px;">
+            <div style="font-weight:700; margin-bottom:8px;">Sample labeled reviews (first ${Math.min(10, (data.samples||[]).length)})</div>
+            <ul style="list-style:none; padding-left:0; margin:0;">
+              ${ (data.samples || []).slice(0,10).map(s => 
+                  `<li style="margin-bottom:8px; padding:8px; background:rgba(255,255,255,0.02); border-radius:8px;">
+                     <span style="font-weight:700; color:${s.prediction==='fake' ? '#ff4d7d' : '#00ffa3'}">[${s.prediction.toUpperCase()}]</span>
+                     &nbsp; <span style="color:rgba(255,255,255,0.85)">${escapeHtml(s.review)}</span>
+                   </li>`
+                ).join('') }
+            </ul>
+          </div>
+
+          <div style="margin-top:16px; text-align:right;">
+            <button id="downloadSamplesBtn" class="btn-download">⬇️ Download Samples CSV</button>
+          </div>
+        </div>
+      `;
+
+      out.style.display = 'block';
+      out.innerHTML = resultHTML;
+
+      // attach download handler
+      document.getElementById('downloadSamplesBtn').addEventListener('click', () => {
+        const rows = [['review','prediction']];
+        (data.samples || []).forEach(s => rows.push([s.review.replace(/"/g,'""'), s.prediction]));
+        const csv = 'data:text/csv;charset=utf-8,' + rows.map(r => `"${r[0]}",${r[1]}`).join('\n');
+        const link = document.createElement('a');
+        link.setAttribute('href', encodeURI(csv));
+        link.setAttribute('download', 'product_samples.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+
+    } catch (err) {
+      loader.style.display = 'none';
+      btn.disabled = false;
+      btn.style.opacity = 1;
+      out.style.display = 'block';
+      out.innerHTML = `<div class="result-card"><div class="result-label">Error</div><div style="color:#ff4d7d; margin-top:8px;">${err.message}</div></div>`;
+    }
+  });
+
+  // small helper: escape HTML for review text
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+})();
+  </script>
+</body>
+</html>

@@ -7,7 +7,7 @@ from src.scrape_amazon import scrape_amazon_reviews
 import numpy as np
 import sklearn
 
-print("✅ sklearn version on server:", sklearn._version_)
+print("✅ sklearn version on server:", sklearn.__version__)
 
 app = Flask(_name_, template_folder='../frontend')
 

@@ -3,15 +3,16 @@ from flask import Flask, request, jsonify, render_template
 import joblib
 import os
 from src.preprocessing import clean_text
-from src.scrape_amazon import scrape_amazon_reviews  # import the scraper
+from src.scrape_amazon import scrape_amazon_reviews
 import numpy as np
 import sklearn
-print("✅ sklearn version on server:", sklearn.__version__)
 
-app = Flask(__name__, template_folder='../frontend')
+print("✅ sklearn version on server:", sklearn._version_)
 
-# ✅ Load trained model safely
-model_path = os.path.join(os.path.dirname(__file__), '../models/fake_review_model.pkl')
+app = Flask(_name_, template_folder='../frontend')
+
+# Load model
+model_path = os.path.join(os.path.dirname(_file_), '../models/fake_review_model.pkl')
 model_path = os.path.normpath(model_path)
 
 try:
@@ -22,11 +23,8 @@ except Exception as e:
     model = None
 
 
-# ---------------- ROUTES ---------------- #
-
 @app.route('/')
 def home():
-    """Serve main frontend page"""
     return render_template('index.html')
 
 
@@ -43,12 +41,11 @@ def predict():
     clean_review = clean_text(data)
     prediction = model.predict([clean_review])[0]
 
-    # LinearSVC doesn’t have predict_proba → approximate confidence
     if hasattr(model, "decision_function"):
         decision = model.decision_function([clean_review])[0]
         confidence = 1 / (1 + np.exp(-abs(decision))) * 100
     else:
-        confidence = 60.0  # fallback confidence
+        confidence = 60.0
 
     return jsonify({
         'prediction': prediction,
@@ -70,10 +67,9 @@ def analyze_url():
     reviews = scrape_amazon_reviews(url, max_pages=10)
 
     if not reviews:
-        print("⚠️ No reviews found or scraping blocked.")
+        print("⚠ No reviews found or scraping blocked.")
         return jsonify({'error': 'No reviews found or scraping blocked'}), 400
 
-    # Clean and predict all reviews
     cleaned = [clean_text(r) for r in reviews]
     preds = model.predict(cleaned)
 
@@ -97,7 +93,5 @@ def analyze_url():
     return jsonify(result)
 
 
-# ---------------- MAIN ---------------- #
-
-if __name__ == '__main__':
+if _name_ == '_main_':
     app.run(debug=True)

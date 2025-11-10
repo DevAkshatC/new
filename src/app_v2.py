@@ -7,9 +7,9 @@ from src.scrape_amazon import scrape_amazon_reviews
 import numpy as np
 import sklearn
 
-print("✅ sklearn version on server:", sklearn.__version__)
+print("✅ sklearn version on server:", sklearn._version_)
 
-app = Flask(__name__, template_folder='../frontend')
+app = Flask(_name_, template_folder='../frontend')
 
 # Load model
 model_path = os.path.join(os.path.dirname(_file_), '../models/fake_review_model.pkl')
@@ -22,10 +22,10 @@ except Exception as e:
     print(f"❌ Failed to load model: {e}")
     model = None
 
+
 # Temporary test endpoint — remove after debugging
 @app.route('/_scrape_test')
 def scrape_test():
-    # replace this example with any Amazon product URL you want to test
     test_url = "https://www.amazon.in/dp/B0B3CP96J9"
     reviews = scrape_amazon_reviews(test_url, max_pages=10)
     return {
@@ -33,7 +33,8 @@ def scrape_test():
         "sample_count": len(reviews),
         "samples": reviews[:50]
     }
-    
+
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -41,7 +42,6 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    """Predict authenticity of manually entered review"""
     if model is None:
         return jsonify({'error': 'Model not loaded'}), 500
 
@@ -66,7 +66,6 @@ def predict():
 
 @app.route('/analyze_url', methods=['POST'])
 def analyze_url():
-    """Scrape Amazon product reviews and analyze them with the model"""
     if model is None:
         return jsonify({'error': 'Model not loaded'}), 500
 

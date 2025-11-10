@@ -9,7 +9,7 @@ import sklearn
 
 print("✅ sklearn version on server:", sklearn.__version__)
 
-app = Flask(_name_, template_folder='../frontend')
+app = Flask(__name__, template_folder='../frontend')
 
 # Load model
 model_path = os.path.join(os.path.dirname(_file_), '../models/fake_review_model.pkl')

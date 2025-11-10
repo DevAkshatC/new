@@ -22,7 +22,18 @@ except Exception as e:
     print(f"❌ Failed to load model: {e}")
     model = None
 
-
+# Temporary test endpoint — remove after debugging
+@app.route('/_scrape_test')
+def scrape_test():
+    # replace this example with any Amazon product URL you want to test
+    test_url = "https://www.amazon.in/dp/B0B3CP96J9"
+    reviews = scrape_amazon_reviews(test_url, max_pages=10)
+    return {
+        "ok": True,
+        "sample_count": len(reviews),
+        "samples": reviews[:50]
+    }
+    
 @app.route('/')
 def home():
     return render_template('index.html')

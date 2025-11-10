@@ -2,7 +2,7 @@
 from flask import Flask, request, jsonify, render_template
 import joblib
 import os
-from preprocessing import clean_text
+from src.preprocessing import clean_text
 from scrape_amazon import scrape_amazon_reviews  # import the scraper
 import numpy as np
 

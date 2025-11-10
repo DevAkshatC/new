@@ -5,11 +5,12 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
-# Download NLTK resources (only runs first time)
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
-nltk.download('omw-1.4')
+# Download NLTK resources (only runs first time on Render)
+nltk.download('punkt', quiet=True)
+nltk.download('punkt_tab', quiet=True)  # ✅ required for new NLTK
+nltk.download('stopwords', quiet=True)
+nltk.download('wordnet', quiet=True)
+nltk.download('omw-1.4', quiet=True)
 
 # Initialize stopwords and lemmatizer
 stop_words = set(stopwords.words('english'))

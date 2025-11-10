@@ -5,6 +5,8 @@ import os
 from src.preprocessing import clean_text
 from src.scrape_amazon import scrape_amazon_reviews  # import the scraper
 import numpy as np
+import sklearn
+print("✅ sklearn version on server:", sklearn.__version__)
 
 app = Flask(__name__, template_folder='../frontend')
 

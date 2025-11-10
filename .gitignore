@@ -1,16 +1,6 @@
-# Virtual environment
 venv/
-.env/
-
-# Python cache files
 __pycache__/
+*.pkl
 *.pyc
-*.pyo
-
-# IDE & OS files
-.vscode/
 .DS_Store
-
-# Model and data files
-data/
-models/
+.env

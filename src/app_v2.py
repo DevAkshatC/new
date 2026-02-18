@@ -132,14 +132,9 @@ def analyze_url():
     print(f"✅ Analysis Complete → Total: {total}, Fake: {fake_count}, Real: {real_count}")
     return jsonify(result)
 
-
-<<<<<<< HEAD
-# ---------------- MAIN ---------------- #
+#jhj ---------------- MAIN ---------------- #
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
 
-=======
-if _name_ == '_main_':
-    app.run(debug=True)
->>>>>>> 1017ad95a2515daa3303379c12cb5e1ef6674705
+#h

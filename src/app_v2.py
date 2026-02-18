@@ -3,7 +3,6 @@
 from flask import Flask, request, jsonify, render_template
 import joblib
 import os
-<<<<<<< HEAD
 import numpy as np
 import nltk
 from preprocessing import clean_text
@@ -22,19 +21,6 @@ app = Flask(__name__, template_folder=FRONTEND_DIR)
 
 # 🔹 Safe model loading
 model_path = os.path.join(BASE_DIR, "..", "models", "fake_review_model.pkl")
-=======
-from src.preprocessing import clean_text
-from src.scrape_amazon import scrape_amazon_reviews
-import numpy as np
-import sklearn
-
-print("✅ sklearn version on server:", sklearn._version_)
-
-app = Flask(_name_, template_folder='../frontend')
-
-# Load model
-model_path = os.path.join(os.path.dirname(_file_), '../models/fake_review_model.pkl')
->>>>>>> 1017ad95a2515daa3303379c12cb5e1ef6674705
 model_path = os.path.normpath(model_path)
 
 try:
@@ -45,17 +31,7 @@ except Exception as e:
     model = None
 
 
-# Temporary test endpoint — remove after debugging
-@app.route('/_scrape_test')
-def scrape_test():
-    test_url = "https://www.amazon.in/dp/B0B3CP96J9"
-    reviews = scrape_amazon_reviews(test_url, max_pages=10)
-    return {
-        "ok": True,
-        "sample_count": len(reviews),
-        "samples": reviews[:50]
-    }
-
+# ---------------- ROUTES ---------------- #
 
 @app.route('/')
 def home():
@@ -74,15 +50,11 @@ def predict():
     clean_review = clean_text(data)
     prediction = model.predict([clean_review])[0]
 
-<<<<<<< HEAD
     # If model supports probability
     if hasattr(model, "predict_proba"):
         probabilities = model.predict_proba([clean_review])[0]
         confidence = probabilities.max() * 100
     elif hasattr(model, "decision_function"):
-=======
-    if hasattr(model, "decision_function"):
->>>>>>> 1017ad95a2515daa3303379c12cb5e1ef6674705
         decision = model.decision_function([clean_review])[0]
         confidence = 1 / (1 + np.exp(-abs(decision))) * 100
     else:
@@ -107,7 +79,6 @@ def analyze_url():
     reviews = scrape_amazon_reviews(url, max_pages=5)
 
     if not reviews:
- 
         return jsonify({'error': 'No reviews found or scraping blocked'}), 400
 
     cleaned = [clean_text(r) for r in reviews]
@@ -132,9 +103,8 @@ def analyze_url():
     print(f"✅ Analysis Complete → Total: {total}, Fake: {fake_count}, Real: {real_count}")
     return jsonify(result)
 
-#jhj ---------------- MAIN ---------------- #
+
+# ---------------- MAIN ---------------- #
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
-
-#h

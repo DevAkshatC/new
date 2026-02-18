@@ -1,15 +1,26 @@
 # src/app_v2.py
+
 from flask import Flask, request, jsonify, render_template
 import joblib
 import os
-from preprocessing import clean_text
-from scrape_amazon import scrape_amazon_reviews  # import the scraper
 import numpy as np
+import nltk
+from preprocessing import clean_text
+from scrape_amazon import scrape_amazon_reviews
 
-app = Flask(__name__, template_folder='../frontend')
+# 🔹 Download required nltk data (important for Render)
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
 
-# ✅ Load trained model safely
-model_path = os.path.join(os.path.dirname(__file__), '../models/fake_review_model.pkl')
+# 🔹 Correct frontend folder path for Render
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
+
+app = Flask(__name__, template_folder=FRONTEND_DIR)
+
+# 🔹 Safe model loading
+model_path = os.path.join(BASE_DIR, "..", "models", "fake_review_model.pkl")
 model_path = os.path.normpath(model_path)
 
 try:
@@ -24,13 +35,11 @@ except Exception as e:
 
 @app.route('/')
 def home():
-    """Serve main frontend page"""
     return render_template('index.html')
 
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    """Predict authenticity of manually entered review"""
     if model is None:
         return jsonify({'error': 'Model not loaded'}), 500
 
@@ -41,12 +50,15 @@ def predict():
     clean_review = clean_text(data)
     prediction = model.predict([clean_review])[0]
 
-    # LinearSVC doesn’t have predict_proba → approximate confidence
-    if hasattr(model, "decision_function"):
+    # If model supports probability
+    if hasattr(model, "predict_proba"):
+        probabilities = model.predict_proba([clean_review])[0]
+        confidence = probabilities.max() * 100
+    elif hasattr(model, "decision_function"):
         decision = model.decision_function([clean_review])[0]
         confidence = 1 / (1 + np.exp(-abs(decision))) * 100
     else:
-        confidence = 60.0  # fallback confidence
+        confidence = 60.0
 
     return jsonify({
         'prediction': prediction,
@@ -56,7 +68,6 @@ def predict():
 
 @app.route('/analyze_url', methods=['POST'])
 def analyze_url():
-    """Scrape Amazon product reviews and analyze them with the model"""
     if model is None:
         return jsonify({'error': 'Model not loaded'}), 500
 
@@ -65,13 +76,11 @@ def analyze_url():
         return jsonify({'error': 'No URL provided'}), 400
 
     print(f"🔗 Analyzing product URL: {url}")
-    reviews = scrape_amazon_reviews(url, max_pages=10)
+    reviews = scrape_amazon_reviews(url, max_pages=5)
 
     if not reviews:
-        print("⚠️ No reviews found or scraping blocked.")
         return jsonify({'error': 'No reviews found or scraping blocked'}), 400
 
-    # Clean and predict all reviews
     cleaned = [clean_text(r) for r in reviews]
     preds = model.predict(cleaned)
 
@@ -98,4 +107,5 @@ def analyze_url():
 # ---------------- MAIN ---------------- #
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
+
